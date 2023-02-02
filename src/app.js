@@ -3,6 +3,7 @@ const express = require('express')
 const hbs = require('hbs')
 const geocode = require('./utils/geocode')
 const forecast = require('./utils/forecast')
+const { homedir } = require('os')
 
 //console.log(__dirname)
 
@@ -19,12 +20,19 @@ app.set('view engine', 'hbs') // handlebars set up
 app.set('views', viewsPath)
 hbs.registerPartials(partialsPath)
 
+hbs.registerHelper("active", function(context, options) {
+    if (context === options) {
+      return "active";
+    }
+  });
+
 // Setup statis directory to serve
 app.use(express.static(publicDirectory))
 
 app.get('', (req, res) => {
     res.render('index', {
         title: 'Weather',
+        page: 'home',
         name: 'Raul Gonzalez'
     })
 })
@@ -33,6 +41,7 @@ app.get('', (req, res) => {
 app.get('/about', (req, res) => {
     res.render('about', {
         title: 'About me',
+        page: 'about',
         name: 'Raul Gonzalez'
     })
 })
@@ -41,6 +50,7 @@ app.get('/help', (req, res) => {
     res.render('help', {
         message: 'Call Raul if any.',
         title: 'Help',
+        page: 'help',
         name: 'Raul Gonzalez'
     })
 })

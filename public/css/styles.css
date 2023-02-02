@@ -36,6 +36,10 @@ header a {
     text-decoration: none;
 }
 
+header a[active] {
+    text-decoration: underline;
+}
+
 .portrait {
     width: 250px;
 }
