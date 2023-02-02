@@ -7,6 +7,7 @@ const forecast = require('./utils/forecast')
 //console.log(__dirname)
 
 const app = express()
+const port = process.env.PORT || 3000
 
 // Define paths for express config
 const publicDirectory = path.join(__dirname, '../public')
@@ -44,7 +45,7 @@ app.get('/help', (req, res) => {
     })
 })
 
-//Send array of objects and it gets stringified
+// Send array of objects and it gets stringified
 app.get('/array', (req, res) => {
     res.send([{
         name: 'Raul Gonzalez',
@@ -117,7 +118,7 @@ app.get('*', (req, res) => {
     res.statusCode = 404
 })
 
-app.listen(3000, () => {
-    console.log('Server is up on port 3000')
+app.listen(port, () => {
+    console.log('Server is up on port ' + port)
 })
 
