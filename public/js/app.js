@@ -42,6 +42,7 @@ const weatherForm = document.querySelector('form')
 const search = document.querySelector('input')
 const messageOne = document.querySelector('#message-1')
 const messageTwo = document.querySelector('#message-2')
+const corgi_img = document.querySelector('#corgi-image')
 
 //messageOne.textContent = '123'
 
@@ -55,15 +56,17 @@ weatherForm.addEventListener('submit', (e) => {
 
     messageOne.textContent = 'Loading...'
     messageTwo.textContent = ''
+    corgi_img.innerHTML = ''
 
     fetch(url).then((response) => {
 
-        response.json().then(({ error, location, forecast }) => {
+        response.json().then(({ error, location, forecast, corgi }) => {
             if (error) {
                 messageOne.textContent = error
             } else {
                 messageOne.textContent = location
                 messageTwo.textContent = forecast
+                corgi_img.innerHTML = "<img class=\"portrait\" src=\"/img/corgi_" + corgi + ".png\" />"
             }
         })
 
