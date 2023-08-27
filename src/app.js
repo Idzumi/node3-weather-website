@@ -3,12 +3,11 @@ const express = require('express')
 const hbs = require('hbs')
 const geocode = require('./utils/geocode')
 const forecast = require('./utils/forecast')
+const fetchFromDB = require('./utils/fetchFromDB')
 const { homedir } = require('os')
-
 //console.log(__dirname)
-
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3902
 
 // Define paths for express config
 const publicDirectory = path.join(__dirname, '../public')
@@ -36,7 +35,6 @@ app.get('', (req, res) => {
         name: 'Raul Gonzalez'
     })
 })
-
 
 app.get('/about', (req, res) => {
     res.render('about', {
@@ -73,31 +71,25 @@ app.get('/weather', (req, res) => {
             error: 'You must provide an address'
         })
     }
-
-    geocode(req.query.address, (error, { latitude, longitude, location } = {} ) => {
-        if (error) {
-            return res.send({ error })
-        }
-
-        forecast(latitude, longitude, (error, forecastData, corgi) => {
+    fetchFromDB(5, req.query.address, (documents) => {
+        geocode(req.query.address, (error, { latitude, longitude, location } = {} ) => {
             if (error) {
-               return res.send({ error })
-            }
-            res.send({
-                location: location,
-                forecast: forecastData,
-                address: req.query.address,
-                corgi
-            })
-
+                return res.send({ error })
+            } else {
+            forecast(latitude, longitude, req.query.address, (error, forecastData, corgi) => {
+                if (error) {
+                   return res.send({ error })
+                }
+                    res.send({
+                        location: location,
+                        forecast: forecastData,
+                        address: req.query.address,
+                        corgi,
+                        requests: JSON.stringify(documents)
+                    })
+            })}
         })
     })
-
-    // res.send({
-    //     location: req.query.address,
-    //     forecast: 'It is 15 degrees above zero.',
-    //     address: req.query.address
-    // })
 })
 
 app.get('/products', (req, res) => {
@@ -117,6 +109,18 @@ app.get('/help/*', (req, res) => {
         errormessage: 'Help article not found.',
         title: 'Error page',
         name: 'Raul Gonzalez'
+    })
+})
+
+app.get('/history', (req, res) => {
+    const n = 20
+    fetchFromDB(n, undefined, (documents) => {
+        res.render('history', {
+            message: JSON.stringify(documents),
+            title: 'History',
+            page: 'history',
+            name: 'Raul Gonzalez'
+        })  
     })
 })
 
